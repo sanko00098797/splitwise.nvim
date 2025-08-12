@@ -23,6 +23,14 @@ https://github.com/user-attachments/assets/95dce3f0-2261-448b-90d8-62b64bb8aa39
 
 - Neovim 0.8+ (uses `winlayout()` and modern APIs)
 
+## Known Conflicts
+
+Note that `<C-l>` is "refresh". If you want to use this plugin but also need to refresh
+regularly, map that to something else or set your own "right" movement for this plugin.
+
+- [Oil](https://github.com/stevearc/oil.nvim): Note that `<C-h>` and `<C-l>` are used for select and refresh respectively
+  in the Oil buffer. Personally I don't use those so I set them to false in the keymaps options in the Oil config.
+
 ## Installation
 
 ### lazy.nvim

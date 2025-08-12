@@ -4,6 +4,10 @@ Smart split navigation for Neovim with optional auto-creation and resizing.
 
 Splitwise lets you move between windows using a single set of directional keys. When you hit an edge, it can (1) create a new split in your direction within configurable limits, (2) resize the current window toward that edge, or (optionally) (3) wrap focus to the opposite side.
 
+## Demo
+
+https://github.com/user-attachments/assets/95dce3f0-2261-448b-90d8-62b64bb8aa39
+
 ## Features
 
 - Directional navigation that feels natural: `<C-h>`, `<C-j>`, `<C-k>`, `<C-l>`

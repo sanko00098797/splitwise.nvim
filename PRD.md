@@ -27,8 +27,8 @@ Notes:
 
 ## Configuration options
 
-- **max_columns** (number, default: `2`): Maximum number of columns allowed to be auto-created on the current tabpage. Set to `1` to disable auto-creating columns. Resizing at edges remains enabled.
-- **max_rows** (number, default: `2`): Maximum number of rows allowed to be auto-created on the current tabpage. Set to `1` to disable auto-creating rows. Resizing at edges remains enabled.
+- **max_columns** (number, default: `2`): Maximum number of columns allowed to be auto-created within the current row (per-row limit). Set to `1` to disable auto-creating columns. Resizing at edges remains enabled.
+- **max_rows** (number, default: `2`): Maximum number of rows allowed to be auto-created within the current column (per-column limit). Set to `1` to disable auto-creating rows. Resizing at edges remains enabled.
 - **resize_step_cols** (number, default: `5`): Columns to widen when resizing at the left/right edge.
 - **resize_step_rows** (number, default: `3`): Rows to heighten when resizing at the top/bottom edge.
 - **create_default_keymaps** (boolean, default: `true`): Whether to register the default `<C-h/j/k/l>` mappings.
@@ -44,7 +44,7 @@ When a directional key is pressed, behavior is:
 1) If there is a neighbor window in that direction, move focus to it (standard directional navigation).
 
 2) If there is no neighbor (you are at that edge):
-   - If the current number of columns/rows is less than the corresponding `max_columns`/`max_rows`, auto-create a split on that edge and move into it (contents duplicate the current buffer unless `new_split_opens_blank_buffer` is `true`):
+   - If within limits, auto-create a split on that edge and move focus into it (contents duplicate the current buffer unless `new_split_opens_blank_buffer` is `true`):
      - Right edge: create a vertical split to the right (default `vsplit`).
      - Left edge: create a vertical split to the left (`leftabove vsplit`).
      - Top edge: create a horizontal split above (`aboveleft split`).
@@ -63,7 +63,7 @@ When a directional key is pressed, behavior is:
 
 - Floating windows are ignored when determining edges and are never targets for creation/movement.
 - Windows matching `ignore_filetypes`/`ignore_buftypes` are skipped when determining neighbors/edges.
-- If a tabpage layout mixes rows and columns (nested splits), column/row counts use only the top-level layout, not nested groups.
+- If a tabpage layout mixes rows and columns (nested splits), the column count is evaluated within the current row only (based on side-by-side groups in that row), and the row count is evaluated within the current column only (based on vertical stacking in that column).
  - Windows with `winfixwidth`/`winfixheight` will not be resized; the action becomes a no-op (unless `wrap_navigation` is `true`).
 
 ## Defaults

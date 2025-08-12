@@ -1,0 +1,152 @@
+# splitwise.nvim
+
+Smart split navigation for Neovim with optional auto-creation and resizing.
+
+Splitwise lets you move between windows using a single set of directional keys. When you hit an edge, it can (1) create a new split in your direction within configurable limits, (2) resize the current window toward that edge, or (optionally) (3) wrap focus to the opposite side.
+
+## Features
+
+- Directional navigation that feels natural: `<C-h>`, `<C-j>`, `<C-k>`, `<C-l>`
+- Auto-create splits when moving into an edge
+  - Columns limited per current row (`max_columns`)
+  - Rows limited per current column (`max_rows`)
+  - New split is created on the side you moved toward and focus moves into it
+- Resize at edges when creation is disallowed (or max reached)
+- Optional wrap-around navigation
+- Ignores floating windows and configurable filetypes/buftypes
+
+## Requirements
+
+- Neovim 0.8+ (uses `winlayout()` and modern APIs)
+
+## Installation
+
+### lazy.nvim
+
+```lua
+{
+  "hiattp/splitwise.nvim",
+  opts = {
+    max_columns = 2, -- Default
+    max_rows = 2, -- Default
+  },
+}
+```
+
+### packer.nvim
+
+```lua
+use {
+  "hiattp/splitwise.nvim",
+  config = function()
+    require("splitwise").setup({})
+  end,
+}
+```
+
+### vim-plug
+
+```vim
+Plug 'hiattp/splitwise.nvim'
+```
+
+Then in Lua config:
+
+```lua
+require("splitwise").setup({})
+```
+
+## Quick start
+
+After installation, the plugin registers default keymaps in normal mode:
+
+- `<C-h>`: move left
+- `<C-j>`: move down
+- `<C-k>`: move up
+- `<C-l>`: move right
+
+Hit an edge and splitwise.nvim will either create a split in that direction (within limits), resize toward that edge, or wrap focus (if enabled).
+
+## Configuration
+
+All options with defaults:
+
+```lua
+require("splitwise").setup({
+  max_columns = 2,                 -- per current row
+  max_rows = 2,                    -- per current column
+  resize_step_cols = 5,            -- :vertical resize +N at left/right edge
+  resize_step_rows = 3,            -- :resize +N at top/bottom edge
+  create_default_keymaps = true,   -- install <C-h/j/k/l>
+  wrap_navigation = false,         -- wrap to opposite edge when blocked
+  ignore_filetypes = { "help", "qf" },
+  ignore_buftypes = { "nofile", "terminal", "prompt" },
+  new_split_opens_blank_buffer = false, -- duplicate current buffer by default
+})
+```
+
+### Notes on behavior
+
+- New splits are always created on the side you travel toward:
+  - Right: `rightbelow vsplit`
+  - Left: `leftabove vsplit`
+  - Up: `aboveleft split`
+  - Down: `belowright split`
+- After auto-creating, focus moves into the new window.
+- Column limits are enforced within your current row; row limits are enforced within your current column. This matches how most users think about adding space where they currently are.
+- When at/over limits, splitwise.nvim resizes the current window toward the edge using the steps above. If a window has `winfixwidth`/`winfixheight`, resize is skipped.
+- Floating windows and windows with ignored filetypes/buftypes are excluded from navigation/creation decisions.
+
+## Examples
+
+- From a single window, press `<C-l>` (move right): creates a right split and focuses it. Press `<C-j>` (move down) to create a bottom split in that right column, if below `max_rows`.
+- With two rows and one column in each, pressing `<C-l>` within the top row creates additional columns only up to `max_columns` for that row; further presses resize instead.
+
+## Disable default keymaps
+
+If you prefer your own mappings:
+
+```lua
+require("splitwise").setup({ create_default_keymaps = false })
+
+vim.keymap.set("n", "<A-h>", require("splitwise").move_left,  { desc = "Splitwise left" })
+vim.keymap.set("n", "<A-j>", require("splitwise").move_down,  { desc = "Splitwise down" })
+vim.keymap.set("n", "<A-k>", require("splitwise").move_up,    { desc = "Splitwise up" })
+vim.keymap.set("n", "<A-l>", require("splitwise").move_right, { desc = "Splitwise right" })
+```
+
+## FAQ
+
+- Q: Does it work with floating terminals or popups?
+  - A: Floating windows are ignored; navigation targets only regular windows.
+- Q: What happens if I disable auto-creation by setting `max_columns = 1` and `max_rows = 1`?
+  - A: Navigation still works. At edges, the plugin resizes toward the edge. If resize is not possible, it does nothing unless `wrap_navigation = true`.
+- Q: Will it interfere with my `splitright`/`splitbelow` settings?
+  - A: No. The plugin uses explicit `leftabove/rightbelow/aboveleft/belowright` so new windows always appear on the travel side.
+
+## Tips
+
+- Consider mapping the functions in terminal-mode or visual-mode to taste if you frequently move around while in those modes.
+- Combine with a window-equalizer plugin if you want automatic balancing after creations/resizes.
+
+## Commands / API
+
+Programmatic API:
+
+```lua
+local splitwise = require("splitwise")
+splitwise.move_left()
+splitwise.move_right()
+splitwise.move_up()
+splitwise.move_down()
+```
+
+## Development
+
+- Issues and PRs welcome.
+- Style: idiomatic Lua, clear naming, avoid deep nesting, handle edge cases first.
+- Please include a concise description and reproduction steps for any bug report.
+
+## Acknowledgements
+
+Thanks to GPT-5 for the bulk of the implementation via the [Cursor CLI](https://cursor.com/cli).

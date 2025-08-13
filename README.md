@@ -140,6 +140,13 @@ vim.keymap.set("n", "<A-l>", require("splitwise").move_right, { desc = "Splitwis
 - Q: Will it interfere with my `splitright`/`splitbelow` settings?
   - A: No. The plugin uses explicit `leftabove/rightbelow/aboveleft/belowright` so new windows always appear on the travel side.
 
+## Alternatives
+
+Check out [smart-splits.nvim](https://github.com/mrjones2014/smart-splits.nvim) for a different
+take on the same idea, particularly if you want Tmux integration. Splitwise (this plugin) is focused
+purely on Neovim windows, and combines splitting and resizing in the same motions/keys
+for simplicity and fewer total keybindings.
+
 ## Tips
 
 - Consider mapping the functions in terminal-mode or visual-mode to taste if you frequently move around while in those modes.

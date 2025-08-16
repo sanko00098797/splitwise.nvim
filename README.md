@@ -98,6 +98,7 @@ require("splitwise").setup({
   ignore_filetypes = { "help", "qf" },
   ignore_buftypes = { "nofile", "terminal", "prompt" },
   new_split_opens_blank_buffer = false, -- duplicate current buffer by default
+  ignore_winfixwidth = false,      -- allow resize even if window has 'winfixwidth'
 })
 ```
 
@@ -110,7 +111,7 @@ require("splitwise").setup({
   - Down: `belowright split`
 - After auto-creating, focus moves into the new window.
 - Column limits are enforced within your current row; row limits are enforced within your current column. This matches how most users think about adding space where they currently are.
-- When at/over limits, splitwise.nvim resizes the current window toward the edge using the steps above. If a window has `winfixwidth`/`winfixheight`, resize is skipped.
+- When at/over limits, splitwise.nvim resizes the current window toward the edge using the steps above. If a window has `winfixheight`, resize is skipped vertically. If a window has `winfixwidth`, horizontal resize is skipped unless `ignore_winfixwidth = true`.
 - Floating windows and windows with ignored filetypes/buftypes are excluded from navigation/creation decisions.
 
 ## Examples

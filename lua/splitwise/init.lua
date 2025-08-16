@@ -10,6 +10,9 @@ local default_config = {
   ignore_filetypes = { "help", "qf" },
   ignore_buftypes = { "nofile", "terminal", "prompt" },
   new_split_opens_blank_buffer = false,
+  -- If true, allow horizontal resize even when current window has 'winfixwidth'
+  -- Vertical resize still respects 'winfixheight'.
+  ignore_winfixwidth = false,
 }
 
 local user_config = {}
@@ -289,11 +292,11 @@ local function open_split(direction, cfg)
   end
 end
 
-local function can_resize_current(direction)
+local function can_resize_current(direction, cfg)
   local win = vim.api.nvim_get_current_win()
   local fixwidth = vim.api.nvim_win_get_option(win, "winfixwidth")
   local fixheight = vim.api.nvim_win_get_option(win, "winfixheight")
-  if (direction == "left" or direction == "right") and fixwidth then
+  if (direction == "left" or direction == "right") and fixwidth and not (cfg and cfg.ignore_winfixwidth) then
     return false
   end
   if (direction == "up" or direction == "down") and fixheight then
@@ -303,12 +306,26 @@ local function can_resize_current(direction)
 end
 
 local function resize_towards(direction, cfg)
-  if not can_resize_current(direction) then
+  if not can_resize_current(direction, cfg) then
     return false
   end
   if direction == "left" or direction == "right" then
-    vim.cmd("vertical resize +" .. tonumber(cfg.resize_step_cols or 5))
-    return true
+    local win = vim.api.nvim_get_current_win()
+    local disabled_fixwidth = false
+    if cfg and cfg.ignore_winfixwidth then
+      local ok_get, fixwidth = pcall(vim.api.nvim_win_get_option, win, "winfixwidth")
+      if ok_get and fixwidth then
+        local ok_set = pcall(vim.api.nvim_win_set_option, win, "winfixwidth", false)
+        if ok_set then
+          disabled_fixwidth = true
+        end
+      end
+    end
+    local ok_cmd, _ = pcall(vim.cmd, "vertical resize +" .. tonumber(cfg.resize_step_cols or 5))
+    if disabled_fixwidth then
+      pcall(vim.api.nvim_win_set_option, win, "winfixwidth", true)
+    end
+    return ok_cmd
   else
     vim.cmd("resize +" .. tonumber(cfg.resize_step_rows or 3))
     return true

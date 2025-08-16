@@ -52,7 +52,7 @@ When a directional key is pressed, behavior is:
    - Else (at edge and at/over the max), attempt to resize the current window to favor that direction (resizing remains enabled even if auto-creation is disabled by `max_columns`/`max_rows`):
      - Right or left edge: widen the current window by `resize_step_cols` columns (equivalent to `:vertical resize +{N}`), subject to `winminwidth` constraints.
      - Top or bottom edge: increase the height of the current window by `resize_step_rows` rows (equivalent to `:resize +{N}`), subject to `winminheight` constraints.
-     - If resizing is not possible due to constraints (including `winfixwidth`/`winfixheight`), do nothing unless `wrap_navigation` is `true`, in which case focus wraps to the opposite edge window.
+    - If resizing is not possible due to constraints (including `winfixheight`, and `winfixwidth` unless `ignore_winfixwidth` is `true`), do nothing unless `wrap_navigation` is `true`, in which case focus wraps to the opposite edge window.
 
 ### Direction-specific notes
 
@@ -64,7 +64,7 @@ When a directional key is pressed, behavior is:
 - Floating windows are ignored when determining edges and are never targets for creation/movement.
 - Windows matching `ignore_filetypes`/`ignore_buftypes` are skipped when determining neighbors/edges.
 - If a tabpage layout mixes rows and columns (nested splits), the column count is evaluated within the current row only (based on side-by-side groups in that row), and the row count is evaluated within the current column only (based on vertical stacking in that column).
- - Windows with `winfixwidth`/`winfixheight` will not be resized; the action becomes a no-op (unless `wrap_navigation` is `true`).
+- Windows with `winfixheight` will not be resized vertically; for `winfixwidth`, horizontal resize is allowed only when `ignore_winfixwidth` is `true`. Otherwise, the action becomes a no-op (unless `wrap_navigation` is `true`).
 
 ## Defaults
 
